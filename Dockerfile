@@ -9,18 +9,7 @@ FROM ubuntu:22.04
 ## Install basic packages
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get -y install sudo && \
-    apt-get -y install git && \
-    apt-get -y install python3
-
-## Install LLVM dependencies
-RUN apt-get -y install cmake && \
-    apt-get -y install ninja-build && \
-    apt-get -y install clang
-
-## Install checker dependencies
-RUN apt-get -y install opam && \
-    opam init --comp=4.14.1 -y && \
-    opam install --confirm-level=unsafe-yes bap z3
+    apt-get -y install git
 
 ## ----------------------------------------------------------------------------
 ## STEP 2: Clone main tool repository
@@ -33,21 +22,36 @@ WORKDIR /eval
 ## STEP 3: Install clang (project version and baseline)
 ## ----------------------------------------------------------------------------
 
+## Install LLVM dependencies
+RUN apt-get -y install cmake && \
+    apt-get -y install ninja-build && \
+    apt-get -y install clang
+
 ## Build clang all in one step so we can delete unnecessary files afterward
 RUN git clone https://github.com/Flandini/llvm-project.git && \
     cd llvm-project && \
     cmake -S llvm -B build -G Ninja -DLLVM_ENABLE_PROJECTS='clang' && \
     cd build && ninja && \
-    cp bin/clang /eval/project-clang && \
+    mkdir /eval/project-build /eval/project-build/bin && \
+    cp bin/clang /eval/project-build/bin/clang && \
+    mkdir /eval/project-build/lib && \
+    cp -r lib/clang /eval/project-build/lib && \
     ninja clean && git checkout baseline && ninja && \
-    cp bin/clang /eval/baseline-clang && \
+    mkdir /eval/baseline-build /eval/baseline-build/bin && \
+    cp bin/clang /eval/baseline-build/bin/clang && \
+    mkdir /eval/baseline-build/lib && \
+    cp -r lib/clang /eval/baseline-build/lib && \
     cd /eval && rm -rf llvm-project
-ENV PROJECT_CC=/eval/project-clang
-ENV BASELINE_CC=/eval/baseline-clang
-
+ENV PROJECT_CC=/eval/project-build/bin/clang
+ENV BASELINE_CC=/eval/baseline-build/bin/clang
 ## ----------------------------------------------------------------------------
 ## STEP 4: Initialize submodules
 ## ----------------------------------------------------------------------------
+
+## Install checker dependencies
+RUN apt-get -y install opam && \
+    opam init --comp=4.14.1 -y && \
+    opam install --confirm-level=unsafe-yes bap z3 splay_tree dolog memtrace
 
 ## Initialize and build checker
 RUN eval $(opam env) && make checker
@@ -58,6 +62,11 @@ RUN make libsodium_init
 ## ----------------------------------------------------------------------------
 ## STEP 5: Set up entrypoint
 ## ----------------------------------------------------------------------------
+
+# install runtime python dependencies
+RUN apt-get -y install python3 && \
+    apt-get -y install pip && \
+    pip install matplotlib
 
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
