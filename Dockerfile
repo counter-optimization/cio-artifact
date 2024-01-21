@@ -44,6 +44,7 @@ RUN git clone https://github.com/Flandini/llvm-project.git && \
     cd /eval && rm -rf llvm-project
 ENV PROJECT_CC=/eval/project-build/bin/clang
 ENV BASELINE_CC=/eval/baseline-build/bin/clang
+
 ## ----------------------------------------------------------------------------
 ## STEP 4: Initialize submodules
 ## ----------------------------------------------------------------------------
