@@ -28,7 +28,7 @@ RUN apt-get -y install cmake && \
     apt-get -y install clang
 
 ## Build clang all in one step so we can delete unnecessary files afterward
-RUN git clone https://github.com/Flandini/llvm-project.git && \
+RUN git clone https://github.com/counter-optimization/llvm-project && \
     cd llvm-project && \
     cmake -S llvm -B build -G Ninja -DLLVM_ENABLE_PROJECTS='clang' && \
     cd build && ninja && \
