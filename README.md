@@ -33,26 +33,37 @@ If Docker is not running, start the Docker daemon:
 sudo systemctl start docker
 ```
 
-### Building the image
+Note that if your user does not have sufficient permissions, you may need to run the below `docker`
+commands with `sudo`.
+
+### Getting the image
 
 #### [RECOMMENDED] Pull the pre-built image
 
-Because the image downloads and compiles LLVM `clang` from scratch, building it requires a very
-high amount of resources (>128GB memory, >100GB storage). 
-It is highly recommended to pull the pre-built image directly:
+We highly recommend downloading the pre-built image (8.4GB) from
+https://homes.cs.washington.edu/~aemichae/cio-asplos24aec.tar.gz.
+Once downloaded, simply load the image with:
 
 ```
-TODO
+docker load -i cio-asplos24aec.tar.gz
 ```
 
-#### Build the image from scratch
+You will need about 30GB total disk space for the `tar` file, the loaded image, and the artifact
+outputs.
 
-WARNING: if you do not have sufficient storage and memory on your device, this build will fail.
+#### Build the image from Dockerfile
 
-Navigate to the directory containing the Dockerfile and `entrypoint.sh`. Run:
+If you are unable to download or use the pre-built image, then you can try building the image from
+the Dockerfile.
+
+WARNING: Because the image downloads and builds LLVM (twice!), building from the Dockerfile
+requires a massive amount of space (~115 GB), plus a sizeable amount of memory and CPUs to build in
+a reasonable timeframe.
+
+If you meet these requirements, simply clone this repository and build:
 
 ```
-docker build  -t cio:asplos24aec .
+cd aec && docker build  -t cio:asplos24aec .
 ```
 
 ### Running the container
@@ -69,14 +80,13 @@ of `clang` is at `$BASELINE_CC`.
 
 ### Basic setup test
 
-Run the container in interactive mode.
 Once you have entered the container, run:
 
 ```
 make CC=$PROJECT_CC test
 ```
 
-If the command finished successfully, you should see the following output:
+If the command finished successfully, you should see the following at the end of the output:
 
 ```
 1 + 1 = 2. Done!
@@ -84,18 +94,22 @@ If the command finished successfully, you should see the following output:
 
 ### Evaluation script
 
-`eval.sh` runs the full evaluation of `cio` on libsodium as was reported in the paper.
-To run it, use the following command:
+`eval.sh` runs the full evaluation of `cio` on libsodium.
+Run it with the following command:
 
 ```
 ./eval.sh -c $PROJECT_CC -b $BASELINE_CC
 ```
 
-Be aware, this script takes a long time to run. It is recommended to run the process in
-the background and send its output to a log file, e.g.:
+Be aware, this script takes a long time to run (~3 hours with 32GB of memory).
+It is recommended to run the process in the background and send its output to a log file, e.g.:
 
 ```
 ./eval.sh -c $PROJECT_CC -b $BASELINE_CC &> eval.log &
 ```
 
 You can then follow along with `tail -f eval.log`.
+
+Eval script outputs are placed in a timestamped
+output folder `YYYY-MM-DD-HH:MM:SS-XXX-eval`, with a symlink at `latest-eval-dir`.
+`cio` build outputs can be found in timestamped folders `YYYY-MM-DD-HH:MM:SS-XXX-cio-build`.
