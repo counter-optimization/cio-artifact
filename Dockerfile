@@ -17,6 +17,7 @@ RUN apt-get -y update && apt-get -y upgrade && \
 
 RUN git clone https://github.com/counter-optimization/cio.git eval
 WORKDIR /eval
+RUN git checkout ASPLOS-artifact-summer2024
 
 ## ----------------------------------------------------------------------------
 ## STEP 3: Install clang (project version and baseline)
@@ -29,7 +30,7 @@ RUN apt-get -y install cmake && \
 
 ## Build clang all in one step so we can delete unnecessary files afterward
 RUN git clone https://github.com/counter-optimization/llvm-project && \
-    cd llvm-project && \
+    cd llvm-project && git checkout ASPLOS-artifact-summer2024 && \
     cmake -S llvm -B build -G Ninja -DLLVM_ENABLE_PROJECTS='clang' && \
     cd build && ninja && \
     mkdir /eval/project-build /eval/project-build/bin && \
@@ -61,13 +62,17 @@ RUN eval $(opam env) && make checker
 RUN make libsodium_init
 
 ## ----------------------------------------------------------------------------
-## STEP 5: Set up entrypoint
+## STEP 5: Install remaining dependencies
 ## ----------------------------------------------------------------------------
 
-# install runtime python dependencies
+# Install runtime python dependencies
 RUN apt-get -y install python3 && \
     apt-get -y install pip && \
     pip install matplotlib
+
+## ----------------------------------------------------------------------------
+## STEP 6: Set up entrypoint
+## ----------------------------------------------------------------------------
 
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
