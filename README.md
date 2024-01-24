@@ -16,8 +16,7 @@ Building the Docker image from scratch requires approximately 115 GB of disk spa
 to the size of LLVM. Once built, or if pre-built, the Docker container requires approximately
 15 GB for the image (8.74 GB) and the evaluation script outputs combined.
 
-To run the evaluation script in a reasonable time frame, we recommend approximately TODO GB of
-memory and 1 CPU.
+To run the evaluation script in a reasonable time frame, we recommend approximately 32 GB of memory, e.g., on an AWS m7a.4xlarge instance.
 
 ### Software Dependencies
 
