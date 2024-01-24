@@ -112,3 +112,7 @@ You can then follow along with `tail -f eval.log`.
 Eval script outputs are placed in a timestamped
 output folder `YYYY-MM-DD-HH:MM:SS-XXX-eval`, with a symlink at `latest-eval-dir`.
 `cio` build outputs can be found in timestamped folders `YYYY-MM-DD-HH:MM:SS-XXX-cio-build`.
+
+By default, `eval.sh` does not run the double-checking phase.
+To enable this phase, remove the `--skip-double-check` flag from line 168 of the Makefile.
+Be aware that with double-checking enabled, the full evaluation script will take roughly twice as long to run (>6-8 hours).
