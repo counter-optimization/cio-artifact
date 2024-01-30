@@ -37,11 +37,10 @@ commands with `sudo`.
 
 ### Getting the image
 
-#### [RECOMMENDED] Pull the pre-built image
+#### [RECOMMENDED] Load the pre-built image
 
-We highly recommend downloading the pre-built image (8.4GB) from
-https://homes.cs.washington.edu/~aemichae/cio-asplos24aec.tar.gz.
-Once downloaded, simply load the image with:
+We highly recommend downloading the pre-built image (8.4G) from https://zenodo.org/records/10594315.
+Once downloaded, load the image with:
 
 ```
 docker load -i cio-asplos24aec.tar.gz
@@ -59,7 +58,7 @@ WARNING: Because the image downloads and builds LLVM (twice!), building from the
 requires a massive amount of space (~115 GB), plus a sizeable amount of memory and CPUs to build in
 a reasonable timeframe.
 
-If you meet these requirements, simply clone this repository and build:
+If you meet these requirements, clone this repository and build:
 
 ```
 cd aec && docker build  -t cio:asplos24aec .
